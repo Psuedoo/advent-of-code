@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 
 
-@dataclass  # Dataclass for the crates
+@dataclass
 class Crate:
     name: str
 
