@@ -33,20 +33,59 @@ class Engine:
                 if char == "*":
                     pontential_gears.append(Gear(x=x_index, y=y_index))
 
-    def is_gear_valid(self, gear: Gear):
-        # TODO: Implement function to check if gear is surrounded by part number
+        return pontential_gears
+
+    def get_surrounding_part_numbers(self, gear: Gear):
+
         part_numbers = self.get_valid_part_numbers()
-        pass
+
+        surrounding_part_numbers = []
+
+        right = gear.x + 1
+        left = gear.x - 1
+
+        for part_number in part_numbers:
+            pn_x_coords = list(part_number.all_x_coords)
+            y_distance = abs(gear.y - part_number.y)
+
+            # This means they are in the same columns
+            if gear.x in pn_x_coords or left in pn_x_coords or right in pn_x_coords:
+                if y_distance <= 1:
+                    surrounding_part_numbers.append(part_number)
+
+        return surrounding_part_numbers
+
+    def is_gear_valid(self, gear: Gear):
+        return len(self.get_surrounding_part_numbers(gear)) == 2
 
     def get_gear_ratio(self, gear: Gear):
-        # TODO: Implement function to multiply surrounding part numbers
-        pass
+        surrounding_part_numbers = self.get_surrounding_part_numbers(gear)
 
-    def get_gear_ratio_sum(self):
-        # TODO: Get all valid gears
-        # Get their ratios
-        # Add them up
-        pass
+        running_product = None
+
+        for part_number in surrounding_part_numbers:
+            if not running_product:
+                running_product = part_number.number
+                continue
+
+            running_product *= part_number.number
+
+        return running_product
+
+    def get_all_gear_ratio_sums(self):
+        valid_gears = self.get_valid_gears()
+
+        return sum([self.get_gear_ratio(gear) for gear in valid_gears])
+
+    def get_valid_gears(self):
+        possible_gears = self.get_potential_gears()
+        valid_gears = []
+
+        for gear in possible_gears:
+            if self.is_gear_valid(gear):
+                valid_gears.append(gear)
+
+        return valid_gears
 
     def get_potential_part_numbers(self):
         part_numbers = []
@@ -149,7 +188,7 @@ class Engine:
             if engine.is_valid_part_number(part_number):
                 valid_part_numbers.append(part_number)
             else:
-                print(f"{part_number} failed the checks")
+                continue
 
         return valid_part_numbers
 
@@ -169,6 +208,4 @@ with open("data.txt", "r") as f:
     for row in engine.coord_plane:
         print(row)
 
-    valid_part_numbers = engine.get_valid_part_numbers()
-
-    print(sum([pn.number for pn in valid_part_numbers]))
+    print(engine.get_all_gear_ratio_sums())
