@@ -15,19 +15,21 @@ class Safe:
         return zero_counts
 
     def turn(self, direction, steps):
-        # breakpoint()
-        if direction == "R":
-            self.zero_counter += self.calculate_zero_passes(steps)
-            self.position += steps
-            self.position %= 100
-        elif direction == "L":
-            self.position -= steps
-            self.position %= 100
-            self.zero_counter += self.calculate_zero_passes(steps)
+
+        for _ in range(1, steps + 1):
+
+            if direction == "R":
+                self.position += 1
+            elif direction == "L":
+                self.position -= 1
+
+            if self.position % 100 == 0:
+                self.zero_counter += 1
+
+        self.position %= 100
 
 
-files = ["lol.txt", "test-data.txt", "data.txt"]
-# files = ["lol.txt", "test-data.txt"]
+files = ["test-data.txt", "data.txt"]
 
 for file in files:
     with open(f"2025/day-1/{file}", "r") as f:
@@ -40,9 +42,3 @@ for file in files:
             safe.turn(direction=direction, steps=turn_count)
 
         print(f"{safe.name}: {safe.zero_counter}")
-
-# 6367 = too low
-# 6433 = wrong
-# 6463 = wrong
-# 6504 = wrong
-# 7267 = too high
